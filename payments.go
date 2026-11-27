@@ -3208,45 +3208,155 @@ func (c *CreatePaymentsRequestBillingAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type CreatePaymentsRequestLineItemsItem struct {
-	Unknown any
+var (
+	createPaymentsRequestLineItemsItemFieldDiscount  = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
+	createPaymentsRequestLineItemsItemFieldVariant   = big.NewInt(1 << 2)
+	createPaymentsRequestLineItemsItemFieldVariantID = big.NewInt(1 << 3)
+)
 
-	typ string
+// createPaymentsRequestLineItemsItemNullableFields maps the wire names of CreatePaymentsRequestLineItemsItem's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestLineItemsItemNullableFields = map[string]*big.Int{
+	"discount": createPaymentsRequestLineItemsItemFieldDiscount,
+	"quantity": createPaymentsRequestLineItemsItemFieldQuantity,
 }
 
-func (c *CreatePaymentsRequestLineItemsItem) GetUnknown() any {
+type CreatePaymentsRequestLineItemsItem struct {
+	// A discount typed at the register for this line. It comes off the line's price for its full quantity, and can't be more than that price. Only with a `card_present` `payment_method`, and requires `payment:manage` on the account. Whop takes each line's discount off the line, then the promo code, then the payment's `discount`. Tax is calculated on the discounted amounts.
+	Discount *PaymentRegisterDiscount `json:"discount,omitempty" url:"discount,omitempty"`
+	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
+	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// Find or create the variant for this entry by its attributes. Unknown properties return an error. Creating a variant requires `plan:create`, and creating or updating a product requires the matching product permission.
+	Variant *CreatePaymentsRequestLineItemsItemVariant `json:"variant,omitempty" url:"variant,omitempty"`
+	// An existing variant to charge for, prefixed `plan_`. Mutually exclusive with `variant`. Each variant may appear once — use `quantity` for multiple units.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetDiscount() *PaymentRegisterDiscount {
 	if c == nil {
 		return nil
 	}
-	return c.Unknown
+	return c.Discount
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetQuantity() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Quantity
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetVariant() *CreatePaymentsRequestLineItemsItemVariant {
+	if c == nil {
+		return nil
+	}
+	return c.Variant
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetVariantID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariantID
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDiscount sets the Discount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItem) SetDiscount(discount *PaymentRegisterDiscount) {
+	c.Discount = discount
+	c.require(createPaymentsRequestLineItemsItemFieldDiscount)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItem) SetQuantity(quantity *int) {
+	c.Quantity = quantity
+	c.require(createPaymentsRequestLineItemsItemFieldQuantity)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItem) SetVariant(variant *CreatePaymentsRequestLineItemsItemVariant) {
+	c.Variant = variant
+	c.require(createPaymentsRequestLineItemsItemFieldVariant)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItem) SetVariantID(variantID *string) {
+	c.VariantID = variantID
+	c.require(createPaymentsRequestLineItemsItemFieldVariantID)
 }
 
 func (c *CreatePaymentsRequestLineItemsItem) UnmarshalJSON(data []byte) error {
-	var valueUnknown any
-	if err := json.Unmarshal(data, &valueUnknown); err == nil {
-		c.typ = "Unknown"
-		c.Unknown = valueUnknown
-		return nil
+	type unmarshaler CreatePaymentsRequestLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
 	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
+	*c = CreatePaymentsRequestLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestLineItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
 }
 
-func (c CreatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
-	if c.typ == "Unknown" || c.Unknown != nil {
-		return json.Marshal(c.Unknown)
+func (c *CreatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
 	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
-type CreatePaymentsRequestLineItemsItemVisitor interface {
-	VisitUnknown(any) error
-}
-
-func (c *CreatePaymentsRequestLineItemsItem) Accept(visitor CreatePaymentsRequestLineItemsItemVisitor) error {
-	if c.typ == "Unknown" || c.Unknown != nil {
-		return visitor.VisitUnknown(c.Unknown)
+func (c *CreatePaymentsRequestLineItemsItem) String() string {
+	if c == nil {
+		return "<nil>"
 	}
-	return fmt.Errorf("type %T does not include a non-empty union type", c)
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
@@ -10361,45 +10471,108 @@ func (s *SummaryPaymentsResponseGroupsSubstatus) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-type UpdatePaymentsRequestLineItemsItem struct {
-	Unknown any
+var (
+	updatePaymentsRequestLineItemsItemFieldID      = big.NewInt(1 << 0)
+	updatePaymentsRequestLineItemsItemFieldVariant = big.NewInt(1 << 1)
+)
 
-	typ string
+type UpdatePaymentsRequestLineItemsItem struct {
+	// A line already on the payment to keep, prefixed `li_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// A line to add. Each product holds one added line, so a new line for the same product replaces it.
+	Variant *UpdatePaymentsRequestLineItemsItemVariant `json:"variant,omitempty" url:"variant,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
 }
 
-func (u *UpdatePaymentsRequestLineItemsItem) GetUnknown() any {
+func (u *UpdatePaymentsRequestLineItemsItem) GetID() *string {
 	if u == nil {
 		return nil
 	}
-	return u.Unknown
+	return u.ID
+}
+
+func (u *UpdatePaymentsRequestLineItemsItem) GetVariant() *UpdatePaymentsRequestLineItemsItemVariant {
+	if u == nil {
+		return nil
+	}
+	return u.Variant
+}
+
+func (u *UpdatePaymentsRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePaymentsRequestLineItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestLineItemsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updatePaymentsRequestLineItemsItemFieldID)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestLineItemsItem) SetVariant(variant *UpdatePaymentsRequestLineItemsItemVariant) {
+	u.Variant = variant
+	u.require(updatePaymentsRequestLineItemsItemFieldVariant)
 }
 
 func (u *UpdatePaymentsRequestLineItemsItem) UnmarshalJSON(data []byte) error {
-	var valueUnknown any
-	if err := json.Unmarshal(data, &valueUnknown); err == nil {
-		u.typ = "Unknown"
-		u.Unknown = valueUnknown
-		return nil
+	type unmarshaler UpdatePaymentsRequestLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
 	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, u)
+	*u = UpdatePaymentsRequestLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
 }
 
-func (u UpdatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
-	if u.typ == "Unknown" || u.Unknown != nil {
-		return json.Marshal(u.Unknown)
+func (u *UpdatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequestLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
 	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", u)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
-type UpdatePaymentsRequestLineItemsItemVisitor interface {
-	VisitUnknown(any) error
-}
-
-func (u *UpdatePaymentsRequestLineItemsItem) Accept(visitor UpdatePaymentsRequestLineItemsItemVisitor) error {
-	if u.typ == "Unknown" || u.Unknown != nil {
-		return visitor.VisitUnknown(u.Unknown)
+func (u *UpdatePaymentsRequestLineItemsItem) String() string {
+	if u == nil {
+		return "<nil>"
 	}
-	return fmt.Errorf("type %T does not include a non-empty union type", u)
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 var (

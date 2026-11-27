@@ -34,7 +34,7 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Invite(
 	ctx context.Context,
-	request *whopsdk.InviteMembershipsRequestBody,
+	request *whopsdk.InviteMembershipsRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.InviteMembershipsResponse], error) {
 	options := core.NewRequestOptions(opts...)
@@ -56,6 +56,7 @@ func (r *RawClient) Invite(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.InviteMembershipsResponse
 	raw, err := r.caller.Call(
 		ctx,

@@ -307,6 +307,75 @@ func (e *ExtendMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	inviteMembershipsRequestFieldEmail     = big.NewInt(1 << 0)
+	inviteMembershipsRequestFieldUserID    = big.NewInt(1 << 1)
+	inviteMembershipsRequestFieldVariantID = big.NewInt(1 << 2)
+)
+
+type InviteMembershipsRequest struct {
+	// Recipient email address. Pass exactly one of `user_id` or `email`.
+	Email *string `json:"email,omitempty" url:"-"`
+	// Recipient user ID, prefixed `user_`. Pass exactly one of `user_id` or `email`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
+	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (i *InviteMembershipsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InviteMembershipsRequest) SetEmail(email *string) {
+	i.Email = email
+	i.require(inviteMembershipsRequestFieldEmail)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InviteMembershipsRequest) SetUserID(userID *string) {
+	i.UserID = userID
+	i.require(inviteMembershipsRequestFieldUserID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InviteMembershipsRequest) SetVariantID(variantID string) {
+	i.VariantID = variantID
+	i.require(inviteMembershipsRequestFieldVariantID)
+}
+
+func (i *InviteMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler InviteMembershipsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*i = InviteMembershipsRequest(body)
+	return nil
+}
+
+func (i *InviteMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed InviteMembershipsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listMembershipsRequestFieldAccountID         = big.NewInt(1 << 0)
 	listMembershipsRequestFieldUserID            = big.NewInt(1 << 1)
 	listMembershipsRequestFieldMemberID          = big.NewInt(1 << 2)
@@ -2447,308 +2516,6 @@ func NewAssignAffiliateMembershipsRequestCommissionTypeFromString(s string) (Ass
 
 func (a AssignAffiliateMembershipsRequestCommissionType) Ptr() *AssignAffiliateMembershipsRequestCommissionType {
 	return &a
-}
-
-type InviteMembershipsRequestBody struct {
-	InviteMembershipsRequestBodyUserID *InviteMembershipsRequestBodyUserID
-	InviteMembershipsRequestBodyEmail  *InviteMembershipsRequestBodyEmail
-
-	typ string
-}
-
-func (i *InviteMembershipsRequestBody) GetInviteMembershipsRequestBodyUserID() *InviteMembershipsRequestBodyUserID {
-	if i == nil {
-		return nil
-	}
-	return i.InviteMembershipsRequestBodyUserID
-}
-
-func (i *InviteMembershipsRequestBody) GetInviteMembershipsRequestBodyEmail() *InviteMembershipsRequestBodyEmail {
-	if i == nil {
-		return nil
-	}
-	return i.InviteMembershipsRequestBodyEmail
-}
-
-func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"user_id", "variant_id"}, []string{"user_id", "variant_id"}) {
-		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
-		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
-			i.typ = "InviteMembershipsRequestBodyUserID"
-			i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
-			return nil
-		}
-	}
-	if internal.MatchesObjectKeys(data, []string{"email", "variant_id"}, []string{"email", "variant_id"}) {
-		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
-		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
-			i.typ = "InviteMembershipsRequestBodyEmail"
-			i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
-			return nil
-		}
-	}
-	if internal.HasObjectKeys(data, []string{"user_id", "variant_id"}) {
-		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
-		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
-			i.typ = "InviteMembershipsRequestBodyUserID"
-			i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
-			return nil
-		}
-	}
-	if internal.HasObjectKeys(data, []string{"email", "variant_id"}) {
-		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
-		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
-			i.typ = "InviteMembershipsRequestBodyEmail"
-			i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
-			return nil
-		}
-	}
-	valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
-	if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
-		i.typ = "InviteMembershipsRequestBodyUserID"
-		i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
-		return nil
-	}
-	valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
-	if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
-		i.typ = "InviteMembershipsRequestBodyEmail"
-		i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, i)
-}
-
-func (i InviteMembershipsRequestBody) MarshalJSON() ([]byte, error) {
-	if i.typ == "InviteMembershipsRequestBodyUserID" || i.InviteMembershipsRequestBodyUserID != nil {
-		return json.Marshal(i.InviteMembershipsRequestBodyUserID)
-	}
-	if i.typ == "InviteMembershipsRequestBodyEmail" || i.InviteMembershipsRequestBodyEmail != nil {
-		return json.Marshal(i.InviteMembershipsRequestBodyEmail)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", i)
-}
-
-type InviteMembershipsRequestBodyVisitor interface {
-	VisitInviteMembershipsRequestBodyUserID(*InviteMembershipsRequestBodyUserID) error
-	VisitInviteMembershipsRequestBodyEmail(*InviteMembershipsRequestBodyEmail) error
-}
-
-func (i *InviteMembershipsRequestBody) Accept(visitor InviteMembershipsRequestBodyVisitor) error {
-	if i.typ == "InviteMembershipsRequestBodyUserID" || i.InviteMembershipsRequestBodyUserID != nil {
-		return visitor.VisitInviteMembershipsRequestBodyUserID(i.InviteMembershipsRequestBodyUserID)
-	}
-	if i.typ == "InviteMembershipsRequestBodyEmail" || i.InviteMembershipsRequestBodyEmail != nil {
-		return visitor.VisitInviteMembershipsRequestBodyEmail(i.InviteMembershipsRequestBodyEmail)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", i)
-}
-
-var (
-	inviteMembershipsRequestBodyEmailFieldEmail     = big.NewInt(1 << 0)
-	inviteMembershipsRequestBodyEmailFieldVariantID = big.NewInt(1 << 1)
-)
-
-type InviteMembershipsRequestBodyEmail struct {
-	// Recipient email address.
-	Email string `json:"email" url:"email"`
-	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
-	VariantID string `json:"variant_id" url:"variant_id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InviteMembershipsRequestBodyEmail) GetEmail() string {
-	if i == nil {
-		return ""
-	}
-	return i.Email
-}
-
-func (i *InviteMembershipsRequestBodyEmail) GetVariantID() string {
-	if i == nil {
-		return ""
-	}
-	return i.VariantID
-}
-
-func (i *InviteMembershipsRequestBodyEmail) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InviteMembershipsRequestBodyEmail) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyEmail) SetEmail(email string) {
-	i.Email = email
-	i.require(inviteMembershipsRequestBodyEmailFieldEmail)
-}
-
-// SetVariantID sets the VariantID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyEmail) SetVariantID(variantID string) {
-	i.VariantID = variantID
-	i.require(inviteMembershipsRequestBodyEmailFieldVariantID)
-}
-
-func (i *InviteMembershipsRequestBodyEmail) UnmarshalJSON(data []byte) error {
-	type unmarshaler InviteMembershipsRequestBodyEmail
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InviteMembershipsRequestBodyEmail(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InviteMembershipsRequestBodyEmail) MarshalJSON() ([]byte, error) {
-	type embed InviteMembershipsRequestBodyEmail
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InviteMembershipsRequestBodyEmail) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
-}
-
-var (
-	inviteMembershipsRequestBodyUserIDFieldUserID    = big.NewInt(1 << 0)
-	inviteMembershipsRequestBodyUserIDFieldVariantID = big.NewInt(1 << 1)
-)
-
-type InviteMembershipsRequestBodyUserID struct {
-	// Recipient user ID, prefixed `user_`.
-	UserID string `json:"user_id" url:"user_id"`
-	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
-	VariantID string `json:"variant_id" url:"variant_id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (i *InviteMembershipsRequestBodyUserID) GetUserID() string {
-	if i == nil {
-		return ""
-	}
-	return i.UserID
-}
-
-func (i *InviteMembershipsRequestBodyUserID) GetVariantID() string {
-	if i == nil {
-		return ""
-	}
-	return i.VariantID
-}
-
-func (i *InviteMembershipsRequestBodyUserID) GetExtraProperties() map[string]interface{} {
-	if i == nil {
-		return nil
-	}
-	return i.extraProperties
-}
-
-func (i *InviteMembershipsRequestBodyUserID) require(field *big.Int) {
-	next := new(big.Int)
-	if i.explicitFields != nil {
-		next.Set(i.explicitFields)
-	}
-	next.Or(next, field)
-	i.explicitFields = next
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyUserID) SetUserID(userID string) {
-	i.UserID = userID
-	i.require(inviteMembershipsRequestBodyUserIDFieldUserID)
-}
-
-// SetVariantID sets the VariantID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyUserID) SetVariantID(variantID string) {
-	i.VariantID = variantID
-	i.require(inviteMembershipsRequestBodyUserIDFieldVariantID)
-}
-
-func (i *InviteMembershipsRequestBodyUserID) UnmarshalJSON(data []byte) error {
-	type unmarshaler InviteMembershipsRequestBodyUserID
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*i = InviteMembershipsRequestBodyUserID(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *i)
-	if err != nil {
-		return err
-	}
-	i.extraProperties = extraProperties
-	i.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (i *InviteMembershipsRequestBodyUserID) MarshalJSON() ([]byte, error) {
-	type embed InviteMembershipsRequestBodyUserID
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*i),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (i *InviteMembershipsRequestBodyUserID) String() string {
-	if i == nil {
-		return "<nil>"
-	}
-	if len(i.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(i); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", i)
 }
 
 var (

@@ -24434,7 +24434,9 @@ Creates a draft invoice backed by a receipt, with saved items, quantities, price
 ```go
 request := &whopsdk.CreateInvoicesRequest{
     AccountID: "biz_xxxxxxxxxxxxxx",
-    Items: []*whopsdk.CreateInvoicesRequestItemsItem{},
+    Items: []*whopsdk.CreateInvoicesRequestItemsItem{
+        &whopsdk.CreateInvoicesRequestItemsItem{},
+    },
 }
 client.Invoices.Create(
     context.TODO(),
@@ -26933,11 +26935,8 @@ Emails one recipient an invitation to a free variant's membership. The invitatio
 <dd>
 
 ```go
-request := &whopsdk.InviteMembershipsRequestBody{
-    InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-        UserID: "user_xxxxxxxxxxxxxx",
-        VariantID: "plan_xxxxxxxxxxxxxx",
-    },
+request := &whopsdk.InviteMembershipsRequest{
+    VariantID: "plan_xxxxxxxxxxxxxx",
 }
 client.Memberships.Invite(
     context.TODO(),
@@ -26957,7 +26956,23 @@ client.Memberships.Invite(
 <dl>
 <dd>
 
-**request:** `*whopsdk.InviteMembershipsRequestBody` 
+**email:** `*string` — Recipient email address. Pass exactly one of `user_id` or `email`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — Recipient user ID, prefixed `user_`. Pass exactly one of `user_id` or `email`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantID:** `string` — Free variant whose membership the recipient is invited to, prefixed `plan_`.
     
 </dd>
 </dl>

@@ -128,7 +128,9 @@ func (c *Client) List(
 //
 //	request := &whopsdk.CreateInvoicesRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    Items: []*whopsdk.CreateInvoicesRequestItemsItem{},
+//	    Items: []*whopsdk.CreateInvoicesRequestItemsItem{
+//	        &whopsdk.CreateInvoicesRequestItemsItem{},
+//	    },
 //	}
 //	client.Invoices.Create(
 //	    context.TODO(),

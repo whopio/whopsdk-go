@@ -2518,45 +2518,153 @@ func (c *CreateInvoicesRequestBillingAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type CreateInvoicesRequestItemsItem struct {
-	Unknown any
+var (
+	createInvoicesRequestItemsItemFieldDescription = big.NewInt(1 << 0)
+	createInvoicesRequestItemsItemFieldQuantity    = big.NewInt(1 << 1)
+	createInvoicesRequestItemsItemFieldVariant     = big.NewInt(1 << 2)
+	createInvoicesRequestItemsItemFieldVariantID   = big.NewInt(1 << 3)
+)
 
-	typ string
+// createInvoicesRequestItemsItemNullableFields maps the wire names of CreateInvoicesRequestItemsItem's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestItemsItemNullableFields = map[string]*big.Int{
+	"description": createInvoicesRequestItemsItemFieldDescription,
 }
 
-func (c *CreateInvoicesRequestItemsItem) GetUnknown() any {
+type CreateInvoicesRequestItemsItem struct {
+	// Text shown under a custom charge on the invoice, its email, and its PDF, up to 1,000 characters. Line breaks are kept. Only for an item with `variant`, where it is saved as that variant's `description` and overrides `variant.description`. An item with `variant_id` shows its variant's own description and rejects this field.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	Quantity    *int    `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
+	Variant *CreateInvoicesRequestItemsItemVariant `json:"variant,omitempty" url:"variant,omitempty"`
+	// An existing variant belonging to the account, identified by its plan_ ID.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateInvoicesRequestItemsItem) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
-	return c.Unknown
+	return c.Description
+}
+
+func (c *CreateInvoicesRequestItemsItem) GetQuantity() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Quantity
+}
+
+func (c *CreateInvoicesRequestItemsItem) GetVariant() *CreateInvoicesRequestItemsItemVariant {
+	if c == nil {
+		return nil
+	}
+	return c.Variant
+}
+
+func (c *CreateInvoicesRequestItemsItem) GetVariantID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariantID
+}
+
+func (c *CreateInvoicesRequestItemsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateInvoicesRequestItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItem) SetDescription(description *string) {
+	c.Description = description
+	c.require(createInvoicesRequestItemsItemFieldDescription)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItem) SetQuantity(quantity *int) {
+	c.Quantity = quantity
+	c.require(createInvoicesRequestItemsItemFieldQuantity)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItem) SetVariant(variant *CreateInvoicesRequestItemsItemVariant) {
+	c.Variant = variant
+	c.require(createInvoicesRequestItemsItemFieldVariant)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItem) SetVariantID(variantID *string) {
+	c.VariantID = variantID
+	c.require(createInvoicesRequestItemsItemFieldVariantID)
 }
 
 func (c *CreateInvoicesRequestItemsItem) UnmarshalJSON(data []byte) error {
-	var valueUnknown any
-	if err := json.Unmarshal(data, &valueUnknown); err == nil {
-		c.typ = "Unknown"
-		c.Unknown = valueUnknown
-		return nil
+	type unmarshaler CreateInvoicesRequestItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
 	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
+	*c = CreateInvoicesRequestItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
 }
 
-func (c CreateInvoicesRequestItemsItem) MarshalJSON() ([]byte, error) {
-	if c.typ == "Unknown" || c.Unknown != nil {
-		return json.Marshal(c.Unknown)
+func (c *CreateInvoicesRequestItemsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
 	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
-type CreateInvoicesRequestItemsItemVisitor interface {
-	VisitUnknown(any) error
-}
-
-func (c *CreateInvoicesRequestItemsItem) Accept(visitor CreateInvoicesRequestItemsItemVisitor) error {
-	if c.typ == "Unknown" || c.Unknown != nil {
-		return visitor.VisitUnknown(c.Unknown)
+func (c *CreateInvoicesRequestItemsItem) String() string {
+	if c == nil {
+		return "<nil>"
 	}
-	return fmt.Errorf("type %T does not include a non-empty union type", c)
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
@@ -5951,45 +6059,153 @@ func (u *UpdateInvoicesRequestBillingAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-type UpdateInvoicesRequestItemsItem struct {
-	Unknown any
+var (
+	updateInvoicesRequestItemsItemFieldDescription = big.NewInt(1 << 0)
+	updateInvoicesRequestItemsItemFieldQuantity    = big.NewInt(1 << 1)
+	updateInvoicesRequestItemsItemFieldVariant     = big.NewInt(1 << 2)
+	updateInvoicesRequestItemsItemFieldVariantID   = big.NewInt(1 << 3)
+)
 
-	typ string
+// updateInvoicesRequestItemsItemNullableFields maps the wire names of UpdateInvoicesRequestItemsItem's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestItemsItemNullableFields = map[string]*big.Int{
+	"description": updateInvoicesRequestItemsItemFieldDescription,
 }
 
-func (u *UpdateInvoicesRequestItemsItem) GetUnknown() any {
+type UpdateInvoicesRequestItemsItem struct {
+	// Text shown under a custom charge on the invoice, its email, and its PDF, up to 1,000 characters. Line breaks are kept. Only for an item with `variant`, where it is saved as that variant's `description` and overrides `variant.description`. An item with `variant_id` shows its variant's own description and rejects this field.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	Quantity    *int    `json:"quantity,omitempty" url:"quantity,omitempty"`
+	// Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
+	Variant *UpdateInvoicesRequestItemsItemVariant `json:"variant,omitempty" url:"variant,omitempty"`
+	// An existing variant belonging to the account, identified by its plan_ ID.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateInvoicesRequestItemsItem) GetDescription() *string {
 	if u == nil {
 		return nil
 	}
-	return u.Unknown
+	return u.Description
+}
+
+func (u *UpdateInvoicesRequestItemsItem) GetQuantity() *int {
+	if u == nil {
+		return nil
+	}
+	return u.Quantity
+}
+
+func (u *UpdateInvoicesRequestItemsItem) GetVariant() *UpdateInvoicesRequestItemsItemVariant {
+	if u == nil {
+		return nil
+	}
+	return u.Variant
+}
+
+func (u *UpdateInvoicesRequestItemsItem) GetVariantID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.VariantID
+}
+
+func (u *UpdateInvoicesRequestItemsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateInvoicesRequestItemsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItem) SetDescription(description *string) {
+	u.Description = description
+	u.require(updateInvoicesRequestItemsItemFieldDescription)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItem) SetQuantity(quantity *int) {
+	u.Quantity = quantity
+	u.require(updateInvoicesRequestItemsItemFieldQuantity)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItem) SetVariant(variant *UpdateInvoicesRequestItemsItemVariant) {
+	u.Variant = variant
+	u.require(updateInvoicesRequestItemsItemFieldVariant)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItem) SetVariantID(variantID *string) {
+	u.VariantID = variantID
+	u.require(updateInvoicesRequestItemsItemFieldVariantID)
 }
 
 func (u *UpdateInvoicesRequestItemsItem) UnmarshalJSON(data []byte) error {
-	var valueUnknown any
-	if err := json.Unmarshal(data, &valueUnknown); err == nil {
-		u.typ = "Unknown"
-		u.Unknown = valueUnknown
-		return nil
+	type unmarshaler UpdateInvoicesRequestItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
 	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, u)
+	*u = UpdateInvoicesRequestItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
 }
 
-func (u UpdateInvoicesRequestItemsItem) MarshalJSON() ([]byte, error) {
-	if u.typ == "Unknown" || u.Unknown != nil {
-		return json.Marshal(u.Unknown)
+func (u *UpdateInvoicesRequestItemsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateInvoicesRequestItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
 	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", u)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
-type UpdateInvoicesRequestItemsItemVisitor interface {
-	VisitUnknown(any) error
-}
-
-func (u *UpdateInvoicesRequestItemsItem) Accept(visitor UpdateInvoicesRequestItemsItemVisitor) error {
-	if u.typ == "Unknown" || u.Unknown != nil {
-		return visitor.VisitUnknown(u.Unknown)
+func (u *UpdateInvoicesRequestItemsItem) String() string {
+	if u == nil {
+		return "<nil>"
 	}
-	return fmt.Errorf("type %T does not include a non-empty union type", u)
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 var (
