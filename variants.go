@@ -4727,13 +4727,14 @@ var (
 	updateVariantsRequestFieldSku                        = big.NewInt(1 << 21)
 	updateVariantsRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 22)
 	updateVariantsRequestFieldStock                      = big.NewInt(1 << 23)
-	updateVariantsRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 24)
-	updateVariantsRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 25)
-	updateVariantsRequestFieldThreeDsLevel               = big.NewInt(1 << 26)
-	updateVariantsRequestFieldTitle                      = big.NewInt(1 << 27)
-	updateVariantsRequestFieldTrialPeriodDays            = big.NewInt(1 << 28)
-	updateVariantsRequestFieldUnlimitedStock             = big.NewInt(1 << 29)
-	updateVariantsRequestFieldVisibility                 = big.NewInt(1 << 30)
+	updateVariantsRequestFieldStockAdjustment            = big.NewInt(1 << 24)
+	updateVariantsRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 25)
+	updateVariantsRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 26)
+	updateVariantsRequestFieldThreeDsLevel               = big.NewInt(1 << 27)
+	updateVariantsRequestFieldTitle                      = big.NewInt(1 << 28)
+	updateVariantsRequestFieldTrialPeriodDays            = big.NewInt(1 << 29)
+	updateVariantsRequestFieldUnlimitedStock             = big.NewInt(1 << 30)
+	updateVariantsRequestFieldVisibility                 = big.NewInt(1 << 31)
 )
 
 type UpdateVariantsRequest struct {
@@ -4785,6 +4786,8 @@ type UpdateVariantsRequest struct {
 	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"-"`
 	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
 	Stock *int `json:"stock,omitempty" url:"-"`
+	// The number of units to add to the current stock. Use a negative number to remove units. The change applies after the other changes in this request, to the stock at that time. This keeps a sale made at the same time. Do not send 0, and do not send it with `stock`. A variant with unlimited stock, or a change that takes the stock below 0, returns a `409`.
+	StockAdjustment *int `json:"stock_adjustment,omitempty" url:"-"`
 	// A comparison price displayed with a strikethrough for the initial price.
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"-"`
 	// A comparison price displayed with a strikethrough for the renewal price.
@@ -4979,6 +4982,13 @@ func (u *UpdateVariantsRequest) SetSplitPayRequiredPayments(splitPayRequiredPaym
 func (u *UpdateVariantsRequest) SetStock(stock *int) {
 	u.Stock = stock
 	u.require(updateVariantsRequestFieldStock)
+}
+
+// SetStockAdjustment sets the StockAdjustment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariantsRequest) SetStockAdjustment(stockAdjustment *int) {
+	u.StockAdjustment = stockAdjustment
+	u.require(updateVariantsRequestFieldStockAdjustment)
 }
 
 // SetStrikeThroughInitialPrice sets the StrikeThroughInitialPrice field and marks it as non-optional;
