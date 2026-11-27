@@ -114,7 +114,9 @@ func TestInvoicesCreateWithWireMock(
 	)
 	request := &whopsdk.CreateInvoicesRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		Items:     []*whopsdk.CreateInvoicesRequestItemsItem{},
+		Items: []*whopsdk.CreateInvoicesRequestItemsItem{
+			&whopsdk.CreateInvoicesRequestItemsItem{},
+		},
 	}
 	_, invocationErr := client.Invoices.Create(
 		context.TODO(),

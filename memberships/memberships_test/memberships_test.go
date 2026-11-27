@@ -131,11 +131,8 @@ func TestMembershipsInviteWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.InviteMembershipsRequestBody{
-		InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-			UserID:    "user_xxxxxxxxxxxxxx",
-			VariantID: "plan_xxxxxxxxxxxxxx",
-		},
+	request := &whopsdk.InviteMembershipsRequest{
+		VariantID: "plan_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Memberships.Invite(
 		context.TODO(),

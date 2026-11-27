@@ -142,11 +142,8 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &whopsdk.InviteMembershipsRequestBody{
-//	    InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-//	        UserID: "user_xxxxxxxxxxxxxx",
-//	        VariantID: "plan_xxxxxxxxxxxxxx",
-//	    },
+//	request := &whopsdk.InviteMembershipsRequest{
+//	    VariantID: "plan_xxxxxxxxxxxxxx",
 //	}
 //	client.Memberships.Invite(
 //	    context.TODO(),
@@ -154,7 +151,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Invite(
 	ctx context.Context,
-	request *whopsdk.InviteMembershipsRequestBody,
+	request *whopsdk.InviteMembershipsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.InviteMembershipsResponse, error) {
 	response, err := c.WithRawResponse.Invite(

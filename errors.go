@@ -103,11 +103,11 @@ func (f *ForbiddenError) GetBody() any {
 // Internal server error
 type InternalServerError struct {
 	*core.APIError
-	Body any
+	Body *InternalServerErrorBody
 }
 
 func (i *InternalServerError) UnmarshalJSON(data []byte) error {
-	var body any
+	var body *InternalServerErrorBody
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (i *InternalServerError) Unwrap() error {
 	return i.APIError
 }
 
-func (i *InternalServerError) GetBody() any {
+func (i *InternalServerError) GetBody() *InternalServerErrorBody {
 	if i == nil {
 		return nil
 	}
@@ -289,11 +289,11 @@ func (u *UnauthorizedError) GetBody() any {
 // Unprocessable entity
 type UnprocessableEntityError struct {
 	*core.APIError
-	Body any
+	Body *UnprocessableEntityErrorBody
 }
 
 func (u *UnprocessableEntityError) UnmarshalJSON(data []byte) error {
-	var body any
+	var body *UnprocessableEntityErrorBody
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
@@ -310,7 +310,7 @@ func (u *UnprocessableEntityError) Unwrap() error {
 	return u.APIError
 }
 
-func (u *UnprocessableEntityError) GetBody() any {
+func (u *UnprocessableEntityError) GetBody() *UnprocessableEntityErrorBody {
 	if u == nil {
 		return nil
 	}

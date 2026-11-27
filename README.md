@@ -1,6 +1,6 @@
 # Whop Go Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fwhopio%2Fwhopsdk-go)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=Whop%2FGo)
 
 The Whop SDK gives you typed access to the Whop API. Pass your API key to the client explicitly: the SDK reads no environment variables, so a client built without a key sends unauthenticated requests and the API answers 401.
 
@@ -27,7 +27,7 @@ API reference documentation is available [here](https://docs.whop.com/api-refere
 
 ## Reference
 
-A full reference for this library is available [here](https://github.com/whopio/whopsdk-go/blob/HEAD/./reference.md).
+A full reference for this library is available [here](./reference.md).
 
 ## Usage
 
