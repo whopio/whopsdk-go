@@ -371,6 +371,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemPaymentRevshare                           ListFinancialActivityRequestLineTypesItem = "payment_revshare"
 	ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_payout"
 	ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshareReinstated                 ListFinancialActivityRequestLineTypesItem = "payment_revshare_reinstated"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshareReinstatedPayout           ListFinancialActivityRequestLineTypesItem = "payment_revshare_reinstated_payout"
 	ListFinancialActivityRequestLineTypesItemPaymentRevshareReversal                   ListFinancialActivityRequestLineTypesItem = "payment_revshare_reversal"
 	ListFinancialActivityRequestLineTypesItemPayoutFee                                 ListFinancialActivityRequestLineTypesItem = "payout_fee"
 	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePayment                  ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment"
@@ -638,6 +640,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout, nil
 	case "payment_revshare_refund":
 		return ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund, nil
+	case "payment_revshare_reinstated":
+		return ListFinancialActivityRequestLineTypesItemPaymentRevshareReinstated, nil
+	case "payment_revshare_reinstated_payout":
+		return ListFinancialActivityRequestLineTypesItemPaymentRevshareReinstatedPayout, nil
 	case "payment_revshare_reversal":
 		return ListFinancialActivityRequestLineTypesItemPaymentRevshareReversal, nil
 	case "payout_fee":

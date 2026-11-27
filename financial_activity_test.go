@@ -2130,6 +2130,20 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("payment_revshare_refund"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_payment_revshare_reinstated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("payment_revshare_reinstated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("payment_revshare_reinstated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_revshare_reinstated_payout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("payment_revshare_reinstated_payout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("payment_revshare_reinstated_payout"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_payment_revshare_reversal", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("payment_revshare_reversal")

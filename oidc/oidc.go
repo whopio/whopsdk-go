@@ -138,6 +138,14 @@ func (c *HTTPClient) Do(request *http.Request) (*http.Response, error) {
 	return c.send.Do(authenticated)
 }
 
+// WithoutTimeout returns a client that sends with the same access tokens but no overall time limit on a
+// request, for a response read for as long as it lasts, as a live read's event stream is.
+func (c *HTTPClient) WithoutTimeout() *HTTPClient {
+	unlimited := *c.send
+	unlimited.Timeout = 0
+	return &HTTPClient{source: c.source, send: &unlimited}
+}
+
 type tokenSource struct {
 	options             Options
 	mu                  sync.Mutex
@@ -434,6 +442,13 @@ func withTimeout[T any](parent context.Context, request string, timeout time.Dur
 			return result.value, result.err
 		}
 	case <-ctx.Done():
+		select {
+		case result := <-finished:
+			if result.err == nil {
+				return result.value, nil
+			}
+		default:
+		}
 	}
 	var zero T
 	return zero, &Error{Message: fmt.Sprintf("%s timed out after %g seconds.", request, timeout.Seconds())}

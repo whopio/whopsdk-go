@@ -307,6 +307,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshare                           RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevsharePayout                     RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_payout"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareRefund                     RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_refund"
+	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareReinstated                 RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_reinstated"
+	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareReinstatedPayout           RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_reinstated_payout"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareReversal                   RetrieveFinancialReportsRequestLineTypesItem = "payment_revshare_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemPayoutFee                                 RetrieveFinancialReportsRequestLineTypesItem = "payout_fee"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformAffiliatePayment                  RetrieveFinancialReportsRequestLineTypesItem = "platform_affiliate_payment"
@@ -574,6 +576,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemPaymentRevsharePayout, nil
 	case "payment_revshare_refund":
 		return RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareRefund, nil
+	case "payment_revshare_reinstated":
+		return RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareReinstated, nil
+	case "payment_revshare_reinstated_payout":
+		return RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareReinstatedPayout, nil
 	case "payment_revshare_reversal":
 		return RetrieveFinancialReportsRequestLineTypesItemPaymentRevshareReversal, nil
 	case "payout_fee":
@@ -1664,6 +1670,8 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshare                           RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevsharePayout                     RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_payout"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareRefund                     RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_refund"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareReinstated                 RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_reinstated"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareReinstatedPayout           RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_reinstated_payout"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareReversal                   RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_revshare_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentUnreconciledClearing               RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_unreconciled_clearing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentUnreconciledReversal               RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_unreconciled_reversal"
@@ -2194,6 +2202,10 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevsharePayout, nil
 	case "payment_revshare_refund":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareRefund, nil
+	case "payment_revshare_reinstated":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareReinstated, nil
+	case "payment_revshare_reinstated_payout":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareReinstatedPayout, nil
 	case "payment_revshare_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentRevshareReversal, nil
 	case "payment_unreconciled_clearing":

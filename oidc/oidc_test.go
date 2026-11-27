@@ -859,3 +859,23 @@ func TestGoogleCloudAsksTheMetadataServer(t *testing.T) {
 type roundTripper func(*http.Request) (*http.Response, error)
 
 func (f roundTripper) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+func TestWithoutTimeoutKeepsTheTokensAndDropsOnlyTheTimeLimit(t *testing.T) {
+	limited := &http.Client{Timeout: time.Second}
+	client, err := NewHTTPClient(Options{RoleID: roleID, IdentityToken: staticIdentity("id-token"), HTTPClient: limited})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	unlimited := client.WithoutTimeout()
+
+	if unlimited.send.Timeout != 0 {
+		t.Fatalf("the stream's client keeps a %s time limit", unlimited.send.Timeout)
+	}
+	if limited.Timeout != time.Second || client.send != limited {
+		t.Fatal("WithoutTimeout changed the caller's client")
+	}
+	if unlimited.source != client.source {
+		t.Fatal("the stream's client exchanges its own tokens")
+	}
+}

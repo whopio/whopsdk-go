@@ -28613,6 +28613,8 @@ const (
 	LedgerActivityLineTypePaymentRevsharePayout                     LedgerActivityLineType = "payment_revshare_payout"
 	LedgerActivityLineTypePaymentRevshareReversal                   LedgerActivityLineType = "payment_revshare_reversal"
 	LedgerActivityLineTypePaymentRevshareRefund                     LedgerActivityLineType = "payment_revshare_refund"
+	LedgerActivityLineTypePaymentRevshareReinstated                 LedgerActivityLineType = "payment_revshare_reinstated"
+	LedgerActivityLineTypePaymentRevshareReinstatedPayout           LedgerActivityLineType = "payment_revshare_reinstated_payout"
 	LedgerActivityLineTypePaymentReferral                           LedgerActivityLineType = "payment_referral"
 	LedgerActivityLineTypePaymentReferralPayable                    LedgerActivityLineType = "payment_referral_payable"
 	LedgerActivityLineTypePaymentReferralReversal                   LedgerActivityLineType = "payment_referral_reversal"
@@ -29158,6 +29160,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePaymentRevshareReversal, nil
 	case "payment_revshare_refund":
 		return LedgerActivityLineTypePaymentRevshareRefund, nil
+	case "payment_revshare_reinstated":
+		return LedgerActivityLineTypePaymentRevshareReinstated, nil
+	case "payment_revshare_reinstated_payout":
+		return LedgerActivityLineTypePaymentRevshareReinstatedPayout, nil
 	case "payment_referral":
 		return LedgerActivityLineTypePaymentReferral, nil
 	case "payment_referral_payable":
