@@ -286,7 +286,7 @@ func (u *UnauthorizedError) GetBody() any {
 	return u.Body
 }
 
-// Verification required
+// Unprocessable entity
 type UnprocessableEntityError struct {
 	*core.APIError
 	Body any
