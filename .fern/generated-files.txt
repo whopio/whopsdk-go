@@ -1,5 +1,4 @@
 .fern/metadata.json
-CONTRIBUTING.md
 README.md
 access_tokens.go
 access_tokens_test.go
