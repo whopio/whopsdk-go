@@ -9,6 +9,9 @@ The Whop SDK gives you typed access to the Whop API. Pass your API key to the cl
 
 - [Documentation](#documentation)
 - [Reference](#reference)
+- [Installation](#installation)
+- [Live Reads](#live-reads)
+- [Workload Identity](#workload-identity)
 - [Usage](#usage)
 - [Environments](#environments)
 - [Pagination](#pagination)
@@ -28,6 +31,61 @@ API reference documentation is available [here](https://docs.whop.com/api-refere
 ## Reference
 
 A full reference for this library is available [here](./reference.md).
+
+## Installation
+
+```sh
+go get github.com/whopio/whopsdk-go/v2
+```
+
+The module path carries the major version, so import the packages under
+`github.com/whopio/whopsdk-go/v2`.
+
+
+## Live reads
+
+A live read answers now and again each time its answer changes. Its client carries
+`Watch` and `WaitFor` beside the read, and both take exactly the read's parameters:
+
+```go
+request := &stats.RetrieveTimeSeriesRequest{Metric: "gmv", From: "2026-11-01", To: "2026-11-30"}
+stream := whop.Stats.TimeSeries.Watch(ctx, request, live.WithMaxBackoff(10*time.Second))
+defer stream.Close()
+for series := range stream.Answers() {
+    fmt.Println(series.GetData().GetPoints())
+}
+if err := stream.Err(); err != nil {
+    return err
+}
+
+series, err := whop.Stats.TimeSeries.WaitFor(ctx, request, func(series *stats.RetrieveTimeSeriesResponse) bool {
+    return len(series.GetData().GetPoints()) == 30
+}, live.WithTimeout(2*time.Minute))
+```
+
+The stream reconnects on its own and ends when the read stops being live. Close a stream
+you stop reading. The `live` package documents every close reason and option.
+
+
+## Workload identity
+
+A workload with a cloud provider's OIDC identity token can call the API without an API key.
+`oidc.NewHTTPClient` exchanges the identity token for a short-lived Whop access token and
+renews it before it expires:
+
+```go
+httpClient, err := oidc.NewHTTPClient(oidc.Options{
+    RoleID:        "aurl_xxxxxxxxxxxxx",
+    IdentityToken: oidc.GitHubActions(oidc.IdentityOptions{}),
+})
+if err != nil {
+    return err
+}
+whop := client.NewWhop(option.WithHTTPClient(httpClient))
+```
+
+`oidc.GoogleCloud` reads the identity token on Google Cloud.
+
 
 ## Usage
 
